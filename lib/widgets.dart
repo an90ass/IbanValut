@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'core/utils/AppColors.dart';
+
 class GradientBackground extends StatelessWidget {
   final Widget child;
 
@@ -35,7 +37,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
     backgroundColor: Colors.transparent, 
     
-      title: const Text('Iban Vault'),
+      title: const Text('IABN VAULT'),
       centerTitle: true,
       titleTextStyle: TextStyle(
         fontSize:30,
@@ -47,4 +49,50 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+class CustomTextFormField extends StatelessWidget {
+  final String labelText;
+  final String hintText;
+  final Icon icon;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final FormFieldSetter<String>? onSaved;
 
+  const CustomTextFormField({
+    super.key,
+    required this.labelText,
+    required this.hintText,
+    required this.icon,
+    this.controller,
+    this.validator,
+    this.onSaved,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+            style: const TextStyle(color: AppColors.black), 
+
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: hintText,
+        labelStyle: const TextStyle(color: AppColors.black),
+        hintStyle: const TextStyle(color: AppColors.black),
+        prefixIcon: icon,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: AppColors.background,
+      ),
+      validator: validator ??
+          (value) {
+            if (value == null || value.isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
+      onSaved: onSaved,
+    );
+  }
+}

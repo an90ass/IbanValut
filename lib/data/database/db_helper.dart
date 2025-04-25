@@ -27,7 +27,7 @@ Future<Database> get database async {
   }
   void _createDb(Database db, int newVersion) async {
     await db.execute('''
-      CREATE TABLE accounts(
+      CREATE TABLE ibans(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         bankName TEXT NOT NULL,
         ibanNumber TEXT NOT NULL,

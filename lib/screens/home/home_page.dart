@@ -2,22 +2,23 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets.dart';
-import '../../widgets/home_page.dart';
+import '../addIban/view/addIban_screen.dart';
+import 'view/home_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   final List<Widget> _pages = [
     const HomeContent(),
-    const AddIbanPage(),
+     AddIbanScreen(),
     const SettingsPage(),
   ];
   void _onItemTapped(int index) {
@@ -53,23 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
       items: const [
         Icon(Icons.home, size: 30),
-        Icon(Icons.list, size: 30),
+        Icon(Icons.add, size: 30),
         Icon(Icons.compare_arrows, size: 30),
       ],
     );
   }
 }
 
-class AddIbanPage extends StatelessWidget {
-  const AddIbanPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Add IBAN Page", style: TextStyle(fontSize: 20)),
-    );
-  }
-}
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});

@@ -37,4 +37,9 @@ class Iban {
     }
     return map;
   }
+  @override
+String toString() {
+  return 'IBAN => {id: $id, bankName: $bankName, ibanNumber: $ibanNumber, createdAt: $createdAt}';
+}
+
 }
