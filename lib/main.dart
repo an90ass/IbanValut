@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ibanvault/core/routes/app_routes.dart';
-import 'package:ibanvault/providers/addIban_provider.dart';
-import 'package:ibanvault/providers/fetchIbans_provider.dart';
+import 'package:ibanvault/core/utils/AppColors.dart';
+import 'package:ibanvault/providers/Iban_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -13,24 +13,25 @@ class IbanVaultApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MultiProvider(
+    return MultiProvider(
       providers: [
-         ChangeNotifierProvider(create: (_) => AddIbanProvider()),
-                  ChangeNotifierProvider(create: (_) => FetchibansProvider()),
-
+        ChangeNotifierProvider(create: (_) => IbansProvider()),
       ],
-      child:  MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-            onGenerateRoute: AppRoutes.onGenerateRoute,
+        onGenerateRoute: AppRoutes.onGenerateRoute,
         initialRoute: '/',
-      
+
         theme: ThemeData.dark().copyWith(
           scaffoldBackgroundColor: Colors.black,
           primaryColor: Colors.white,
+          colorScheme: ThemeData.dark().colorScheme.copyWith(
+            primary: AppColors.blue,
+          ),
           textTheme: ThemeData.dark().textTheme.apply(
-                bodyColor: Colors.white,
-                displayColor: Colors.white,
-              ),
+            bodyColor: Colors.white,
+            displayColor: Colors.white,
+          ),
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,

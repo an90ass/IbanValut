@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ibanvault/providers/addIban_provider.dart';
+import 'package:ibanvault/providers/Iban_provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -119,7 +119,7 @@ class AddIbanScreen extends StatelessWidget {
             ibanNumber: _ibanNumber!,
             createdAt: DateTime.now().toString(),
           );
-          context.read<AddIbanProvider>().addIban(ibanModel: ibanModel);
+          context.read<IbansProvider>().addIban( ibanModel);
 showTopSnackBar(
   Overlay.of(context),
   const CustomSnackBar.success(
@@ -154,22 +154,4 @@ showTopSnackBar(
       ),
     );
   }
-}
-void _showTopSnackBar(BuildContext context, String message, bool isSuccess) {
-  final snackBar = SnackBar(
-    content: Text(message),
-    backgroundColor: isSuccess ? Colors.green : Colors.red,
-    behavior: SnackBarBehavior.floating,
-    margin: EdgeInsets.only(
-      bottom: MediaQuery.of(context).size.height - 100,
-      left: 20,
-      right: 20,
-    ),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-    ),
-    duration: Duration(seconds: 3),
-  );
-
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
