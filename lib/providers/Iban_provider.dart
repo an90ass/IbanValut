@@ -8,23 +8,23 @@ class IbansProvider with ChangeNotifier {
   List<Iban> _ibans = [];
   List<Iban> get ibans => _ibans;
 
-  Future<void> fetchIbans() async {
-    _ibans = await dbOperations.getAllIbans();
+  Future<void> fetchMyIbans() async {
+    _ibans = await dbOperations.getMyAllIbans();
     notifyListeners();
   }
 
-  Future<void> addIban(Iban ibanModel) async {
-    await dbOperations.insertIban(ibanModel.toMap());
-    await fetchIbans();
+  Future<void> addMyIban(Iban ibanModel) async {
+    await dbOperations.insertMyIban(ibanModel.toMap());
+    await fetchMyIbans();
   }
 
   Future<void> updateIban(Iban updatedIban) async {
-    await dbOperations.updateIban(updatedIban);
-    await fetchIbans();
+    await dbOperations.updateMyIban(updatedIban);
+    await fetchMyIbans();
   }
 
-  Future<void> deleteIban(String id) async {
-    await dbOperations.deleteIban(id);
-    await fetchIbans();
+  Future<void> deleteMyIban(String id) async {
+    await dbOperations.deleteMyIban(id);
+    await fetchMyIbans();
   }
 }

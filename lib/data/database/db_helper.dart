@@ -22,7 +22,7 @@ Future<Database> get database async {
   Future<Database> initializeDb() async{
     Directory directory = await getApplicationDocumentsDirectory();
         String path = directory.path + "/ibanVault.db";
-        var ibanVaultDb = await openDatabase(path,version: 1, onCreate :_createDb);
+        var ibanVaultDb = await openDatabase(path,version: 2, onCreate :_createDb,onUpgrade: _onUpgrade,);
       return ibanVaultDb;
   }
   void _createDb(Database db, int newVersion) async {
@@ -35,6 +35,21 @@ Future<Database> get database async {
       )
     ''');
   }
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  if (oldVersion < 2) {
+    await db.execute('''
+  CREATE TABLE friend_ibans (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    bankName TEXT NOT NULL,
+    iban TEXT NOT NULL,
+    createdAt TEXT NOT NULL
+  )
+''');
+
+  }
+}
+
   Future closeDb() async {
   final db = await database;
   await db.close();

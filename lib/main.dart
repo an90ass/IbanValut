@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ibanvault/core/routes/app_routes.dart';
 import 'package:ibanvault/core/utils/AppColors.dart';
 import 'package:ibanvault/providers/Iban_provider.dart';
+import 'package:ibanvault/providers/friend_Ibans_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -16,6 +17,8 @@ class IbanVaultApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => IbansProvider()),
+        ChangeNotifierProvider(create: (_) => FriendIbansProvider()),
+
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
