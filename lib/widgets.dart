@@ -70,20 +70,19 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-            style: const TextStyle(color: AppColors.black), 
+            style: const TextStyle(color:Colors.white), 
 
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        labelStyle: const TextStyle(color: AppColors.black),
-        hintStyle: const TextStyle(color: AppColors.black),
+        labelStyle: const TextStyle(color: Colors.white),
+        hintStyle: const TextStyle(color: Colors.white),
         prefixIcon: icon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         filled: true,
-        fillColor: AppColors.background,
       ),
       validator: validator ??
           (value) {

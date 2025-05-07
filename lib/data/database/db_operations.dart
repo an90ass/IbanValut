@@ -14,7 +14,8 @@ class DbOperations {
 
   Future<List<Iban>> getAllIbans() async {
     final db = await DbHelper().database;
-    final List<Map<String, dynamic>> result = await db.query('ibans');
+    final List<Map<String, dynamic>> result = await db.query('ibans',
+     orderBy: 'createdAt DESC',);
 
     return result.map((map) => Iban.fromMap(map)).toList();
   }

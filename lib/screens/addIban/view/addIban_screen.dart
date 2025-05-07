@@ -6,15 +6,22 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../../core/utils/AppColors.dart';
 import '../../../data/models/ibans_model.dart';
 import '../../../widgets.dart';
-import 'package:provider/provider.dart'; 
+import 'package:provider/provider.dart';
 
-class AddIbanScreen extends StatelessWidget {
+class AddIbanScreen extends StatefulWidget {
   AddIbanScreen({super.key});
+
+  @override
+  State<AddIbanScreen> createState() => _AddIbanScreenState();
+}
+
+class _AddIbanScreenState extends State<AddIbanScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
 
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -26,7 +33,7 @@ class AddIbanScreen extends StatelessWidget {
             _buildSubTitleText(),
             SizedBox(height: 10),
             Divider(),
-      
+
             _buildAddIbanForm(context),
           ],
         ),
@@ -52,8 +59,27 @@ class AddIbanScreen extends StatelessWidget {
     );
   }
 
+  final List<String> turkishBanks = [
+    'Ziraat Bankası',
+    'Halkbank',
+    'VakıfBank',
+    'İş Bankası',
+    'Garanti BBVA',
+    'Yapı Kredi',
+    'Akbank',
+    'QNB Finansbank',
+    'DenizBank',
+    'TEB',
+    'Şekerbank',
+    'Kuveyt Türk',
+    'Albaraka Türk',
+    'Türkiye Finans',
+  ];
+
   String? _bankName;
+
   String? _ibanNumber;
+
   _buildAddIbanForm(BuildContext context) {
     return Form(
       key: _formKey,
@@ -72,18 +98,48 @@ class AddIbanScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            CustomTextFormField(
-              labelText: 'Bank Name',
-              hintText: 'e.g. Ziraat Bnak',
-              icon: const Icon(Icons.person),
+            // CustomTextFormField(
+            //   labelText: 'Bank Name',
+            //   hintText: 'e.g. Ziraat Bnak',
+            //   icon: const Icon(Icons.person),
+            //   validator: (value) {
+            //     if (value == null || value.isEmpty) {
+            //       return 'Please enter your name';
+            //     }
+            //     return null;
+            //   },
+            //   onSaved: (value) => _bankName = value,
+            // ),
+            DropdownButtonFormField<String>(
+              value: _bankName,
+              dropdownColor: AppColors.primary,
+  decoration: const InputDecoration(
+        fillColor: Colors.red,
+    labelText: 'Bank Name',
+    border: OutlineInputBorder(),
+    prefixIcon: Icon(Icons.account_balance),
+  ),
+              items:
+                  turkishBanks.map((bank) {
+                    return DropdownMenuItem<String>(
+                      value: bank,
+                      child: Text(bank),
+                    );
+                  }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _bankName = value;
+                });
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your name';
+                  return 'Please select a bank';
                 }
                 return null;
               },
               onSaved: (value) => _bankName = value,
             ),
+
             const SizedBox(height: 16),
 
             CustomTextFormField(
@@ -119,23 +175,22 @@ class AddIbanScreen extends StatelessWidget {
             ibanNumber: _ibanNumber!,
             createdAt: DateTime.now().toString(),
           );
-          context.read<IbansProvider>().addIban( ibanModel);
-showTopSnackBar(
-  Overlay.of(context),
-  const CustomSnackBar.success(
-    message: 'IBAN saved successfully!',
-  ),
-);
-
+          context.read<IbansProvider>().addIban(ibanModel);
+          showTopSnackBar(
+            Overlay.of(context),
+            const CustomSnackBar.success(message: 'IBAN saved successfully!'),
+          );
+setState(() {
+  _bankName = null;
+});
           _formKey.currentState!.reset();
         } else {
           showTopSnackBar(
-  Overlay.of(context),
-  const CustomSnackBar.success(
-    message: 'Failed to save IBAN please try again',
-  ),
-);
-
+            Overlay.of(context),
+            const CustomSnackBar.success(
+              message: 'Failed to save IBAN please try again',
+            ),
+          );
         }
       },
       style: ElevatedButton.styleFrom(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ibanvault/core/utils/AppColors.dart';
+import 'package:ibanvault/core/utils/ImageEnum.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -17,18 +18,31 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
+  final TextEditingController _searchController = TextEditingController();
+
+  List<Iban> _filteredIbans = [];
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<IbansProvider>().fetchIbans();
+      final Ibansprovider = context.read<IbansProvider>();
+      Ibansprovider.fetchIbans().then((_) {
+        setState(() {
+          _filteredIbans = Ibansprovider.ibans;
+        });
+      });
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final ibans = context.watch<IbansProvider>().ibans;
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final allIbans = context.read<IbansProvider>().ibans;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -39,10 +53,29 @@ class _HomeContentState extends State<HomeContent> {
           _buildSubTitleText(),
           Divider(),
           SizedBox(height: 10),
+          TextField(
+            onChanged: (value) {
+              setState(() {
+                _filteredIbans =
+                    allIbans.where((iban) {
+                      final search = value.toLowerCase();
+                      return iban.bankName.toLowerCase().contains(search) ||
+                          iban.ibanNumber.toLowerCase().contains(search);
+                    }).toList();
+              });
+            },
+
+            controller: _searchController,
+            decoration: InputDecoration(
+              labelText: 'Search..',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          SizedBox(height: 10),
 
           Expanded(
             child:
-                ibans.isEmpty
+                allIbans.isEmpty || _filteredIbans.isEmpty
                     ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -60,9 +93,9 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     )
                     : ListView.builder(
-                      itemCount: ibans.length,
+                      itemCount: _filteredIbans.length,
                       itemBuilder: (context, index) {
-                        final iban = ibans[index];
+                        final iban = _filteredIbans[index];
                         return _buildIbanCard(iban);
                       },
                     ),
@@ -101,9 +134,19 @@ class _HomeContentState extends State<HomeContent> {
 
         contentPadding: const EdgeInsets.all(16),
         leading: CircleAvatar(
-          backgroundColor: AppColors.background,
-          child: Image.asset('assets/images/logo-ziraat-bankasi.png'),
-        ),
+  radius: 30, 
+  backgroundColor: AppColors.background,
+  child: Padding(
+    padding: const EdgeInsets.all(4.0), 
+    child: Image.asset(
+      _getImagePath(iban.bankName),
+      width: 40,
+      height: 40,
+      fit: BoxFit.contain,
+    ),
+  ),
+),
+
         title: Text(
           iban.bankName,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -426,4 +469,41 @@ class _HomeContentState extends State<HomeContent> {
       },
     );
   }
+  
+String _getImagePath(String bankName) {
+  switch (bankName) {
+    case 'Ziraat Bankası':
+      return ImageEnum.logoZiraatBankasi.imagePath;
+    case 'Halkbank':
+      return ImageEnum.halkbank.imagePath;
+    case 'VakıfBank':
+      return ImageEnum.vakifbank.imagePath;
+    case 'İş Bankası':
+      return ImageEnum.turkiyeIsBankasi.imagePath;
+    case 'Garanti BBVA':
+      return ImageEnum.GarantiBBVA.imagePath;
+    case 'Yapı Kredi':
+      return ImageEnum.yapikredibankasi.imagePath;
+    case 'Akbank':
+      return ImageEnum.Akbank.imagePath;
+    case 'QNB Finansbank':
+      return ImageEnum.qnbFinansbank.imagePath;
+    case 'DenizBank':
+      return ImageEnum.denizBank.imagePath;
+    case 'TEB':
+      return ImageEnum.tebLogo.imagePath;
+    case 'Şekerbank':
+      return ImageEnum.sekerbank.imagePath;
+    case 'Kuveyt Türk':
+      return ImageEnum.KuveytTurk.imagePath;
+    case 'Albaraka Türk':
+      return ImageEnum.AlbarakaTurk.imagePath;
+    case 'Türkiye Finans':
+      return ImageEnum.turkiyefinans.imagePath;
+    default:
+      return ImageEnum.logoZiraatBankasi.imagePath; 
+  }
+}
+
+
 }
