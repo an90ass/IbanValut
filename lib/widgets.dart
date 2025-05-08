@@ -37,7 +37,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
     backgroundColor: Colors.transparent, 
     
-      title: const Text('IABN VAULT'),
+      title: const Text('IBAN VAULT'),
       centerTitle: true,
       titleTextStyle: TextStyle(
         fontSize:30,

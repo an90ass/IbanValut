@@ -540,15 +540,22 @@ _buildDropDownBanks(
 }) {
   return DropdownButtonFormField<String>(
     value: value,
+    dropdownColor: AppColors.grey,
+    iconEnabledColor: AppColors.black,
+    style: const TextStyle(color: Colors.white), 
     decoration: const InputDecoration(
       labelText: 'Bank Name',
+      labelStyle: TextStyle(color: Colors.black), 
       border: OutlineInputBorder(),
-      prefixIcon: Icon(Icons.account_balance),
+      prefixIcon: Icon(Icons.account_balance, color: Colors.black), 
     ),
     items: Banks.turkishBanks.map((bank) {
       return DropdownMenuItem<String>(
         value: bank,
-        child: Text(bank),
+        child: Text(
+          bank,
+          style: const TextStyle(color: Colors.black), 
+        ),
       );
     }).toList(),
     onChanged: onChanged,
@@ -556,7 +563,4 @@ _buildDropDownBanks(
     onSaved: onSaved,
   );
 }
-
-
-
     }

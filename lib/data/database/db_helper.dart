@@ -34,6 +34,15 @@ Future<Database> get database async {
         createdAt TEXT NOT NULL
       )
     ''');
+     await db.execute('''
+    CREATE TABLE friend_ibans (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      bankName TEXT NOT NULL,
+      iban TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    )
+  ''');
   }
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
   if (oldVersion < 2) {

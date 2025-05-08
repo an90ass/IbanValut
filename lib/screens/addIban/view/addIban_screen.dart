@@ -11,6 +11,8 @@ import '../../../data/models/ibans_model.dart';
 import '../../../widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../../widgets/QR_Scanner.dart';
+
 class AddIbanScreen extends StatefulWidget {
   AddIbanScreen({super.key});
 
@@ -22,6 +24,8 @@ class _AddIbanScreenState extends State<AddIbanScreen>
     with SingleTickerProviderStateMixin {
   GlobalKey<FormState> _myIbanFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _friendIbanFormKey = GlobalKey<FormState>();
+  final TextEditingController _ibanController = TextEditingController();
+  final TextEditingController _friendibanController = TextEditingController();
 
   late TabController _tabController;
   @override
@@ -91,8 +95,6 @@ class _AddIbanScreenState extends State<AddIbanScreen>
     );
   }
 
- 
-
   String? _bankName;
 
   String? _ibanNumber;
@@ -148,17 +150,38 @@ class _AddIbanScreenState extends State<AddIbanScreen>
 
             const SizedBox(height: 16),
 
-            CustomTextFormField(
-              labelText: 'IBAN Number',
-              hintText: 'e.g. SA0380000000608010167519',
-              icon: const Icon(Icons.person),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your IBAN number';
-                }
-                return null;
-              },
-              onSaved: (value) => _ibanNumber = value,
+            Row(
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    controller: _ibanController,
+                    labelText: 'IBAN Number',
+                    hintText: 'e.g. SA0380000000608010167519',
+                    icon: const Icon(Icons.person),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your IBAN number';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => _ibanNumber = value,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: IconButton(
+                    onPressed: () async {
+                      final result = await showQrScannerDialog(context);
+                      if (result != null) {
+                        _ibanController.text = result;
+                      }
+                    },
+                    icon: const Icon(Icons.qr_code_scanner),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 24),
@@ -193,7 +216,7 @@ class _AddIbanScreenState extends State<AddIbanScreen>
         } else {
           showTopSnackBar(
             Overlay.of(context),
-            const CustomSnackBar.success(
+            const CustomSnackBar.error(
               message: 'Failed to save IBAN please try again',
             ),
           );
@@ -286,17 +309,38 @@ class _AddIbanScreenState extends State<AddIbanScreen>
 
               const SizedBox(height: 16),
 
-              CustomTextFormField(
-                labelText: 'IBAN Number',
-                hintText: 'e.g. TR0000000000000000000000',
-                icon: const Icon(Icons.numbers),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the IBAN number';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _friendIbanNumber = value,
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextFormField(
+                      controller: _friendibanController,
+                      labelText: 'IBAN Number',
+                      hintText: 'e.g. TR0380000000608010167519',
+                      icon: const Icon(Icons.person),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your IBAN number';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => _ibanNumber = value,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: IconButton(
+                      onPressed: () async {
+                        final result = await showQrScannerDialog(context);
+                        if (result != null) {
+                          _friendibanController.text = result;
+                        }
+                      },
+                      icon: const Icon(Icons.qr_code_scanner),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 24),
@@ -334,7 +378,7 @@ class _AddIbanScreenState extends State<AddIbanScreen>
         } else {
           showTopSnackBar(
             Overlay.of(context),
-            const CustomSnackBar.success(
+            const CustomSnackBar.error(
               message: 'Failed to save IBAN please try again',
             ),
           );
@@ -354,6 +398,24 @@ class _AddIbanScreenState extends State<AddIbanScreen>
           fontWeight: FontWeight.w600,
         ),
       ),
+    );
+  }
+
+  Future<String?> showQrScannerDialog(BuildContext context) async {
+    return await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: SizedBox(
+            width: 300,
+            height: 400,
+            child: QrScannerDialogContent(),
+          ),
+        );
+      },
     );
   }
 }

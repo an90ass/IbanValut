@@ -44,20 +44,36 @@ class Cards {
             Text("Date: ${iban.createdAt.split('T').first}"),
           ],
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: onEdit,
-              child: const Icon(Icons.edit, size: 16, color: AppColors.success),
-            ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: onDelete,
-              child: const Icon(Icons.delete, size: 16, color: AppColors.danger),
-            ),
-          ],
-        ),
+      trailing: Wrap(
+  spacing: 4,
+  children: [
+    // Edit FAB
+    FloatingActionButton.small(
+      heroTag: 'edit_${iban.id}',
+      onPressed: onEdit,
+      backgroundColor: AppColors.success.withOpacity(0.2),
+      elevation: 0,
+      child: Icon(
+        Icons.edit_rounded,
+        size: 18,
+        color: AppColors.success,
+      ),
+    ),
+    
+    // Delete FAB
+    FloatingActionButton.small(
+      heroTag: 'delete_${iban.id}',
+      onPressed: onDelete,
+      backgroundColor: AppColors.danger.withOpacity(0.2),
+      elevation: 0,
+      child: Icon(
+        Icons.delete_forever_rounded,
+        size: 18,
+        color: AppColors.danger,
+      ),
+    ),
+  ],
+),
       ),
     );
   }
@@ -111,20 +127,36 @@ static Widget buildFriendIbanCard({
             Text("Date: ${iban.createdAt.split('T').first}"),
           ],
         ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: onEdit,
-              child: const Icon(Icons.edit, size: 16, color: AppColors.success),
-            ),
-            const SizedBox(width: 10),
-            GestureDetector(
-              onTap: onDelete,
-              child: const Icon(Icons.delete, size: 16, color: AppColors.danger),
-            ),
-          ],
-        ),
+        trailing: Wrap(
+  spacing: 4,
+  children: [
+    // Edit FAB
+    FloatingActionButton.small(
+      heroTag: 'edit_${iban.id}',
+      onPressed: onEdit,
+      backgroundColor: AppColors.success.withOpacity(0.2),
+      elevation: 0,
+      child: Icon(
+        Icons.edit_rounded,
+        size: 18,
+        color: AppColors.success,
+      ),
+    ),
+    
+    // Delete FAB
+    FloatingActionButton.small(
+      heroTag: 'delete_${iban.id}',
+      onPressed: onDelete,
+      backgroundColor: AppColors.danger.withOpacity(0.2),
+      elevation: 0,
+      child: Icon(
+        Icons.delete_forever_rounded,
+        size: 18,
+        color: AppColors.danger,
+      ),
+    ),
+  ],
+),
       ),
     );
   }
