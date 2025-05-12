@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ibanvault/core/routes/route_names.dart';
 import 'package:ibanvault/core/utils/AppColors.dart';
 import 'package:ibanvault/data/banks.dart';
 import 'package:ibanvault/data/models/friend_ibans_model.dart';
@@ -62,6 +63,9 @@ class _HomeContentState extends State<HomeContent>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          ElevatedButton(onPressed: (){
+            Navigator.pushNamed(context, Routenames.login);
+          }, child: Text("Login PAGE")),
           _buildTitleText(),
           SizedBox(height: 10),
           _buildSubTitleText(),
