@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ibanvault/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+
+import '../../../data/models/user_model.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -156,29 +160,58 @@ class _SignupviewState extends State<SignUpView> {
                 ),
                 SizedBox(height: 16),
 
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final username = _usernameController.text;
-                        final password = _passwordController.text;
-                        print("Login with $username and $password");
-                      }
-                    },
-                    child: Text(
-                      "Sign Up",
-                      style: TextStyle(color: Colors.white, fontSize: 30),
-                    ),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final username = _usernameController.text.trim();
+                            final password = _passwordController.text.trim();
+                            final rememberQuestion =
+                                _securityAnswerController.text.trim();
+                            final user = User(
+                              user_name: username,
+                              password: password,
+                              remeberQuestion: rememberQuestion,
+                            );
+                            await authProvider.registerUser(user);
+                            if(authProvider.successMessage!=null){
+                              _clearFormFields();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(authProvider.successMessage!,style: TextStyle(color: Colors.white),),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                        } else  {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(authProvider.errorMessage!,
+                                style: TextStyle(color: Colors.white),),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }  }
+                        },
+                        child: Text(
+                          authProvider.isLoading
+                              ? "Please wait a moment.."
+                              : "Sign Up",
+                          style: TextStyle(color: Colors.white, fontSize: 30),
+                        ),
 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      minimumSize: Size(60, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          minimumSize: Size(60, 60),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -186,5 +219,13 @@ class _SignupviewState extends State<SignUpView> {
         ],
       ),
     );
+  }
+
+  void _clearFormFields() {
+    _usernameController.clear();
+    _passwordController.clear();
+    _confirmPasswordController.clear();
+    _securityAnswerController.clear();
+    setState(() => _selectedQuestion = null);
   }
 }

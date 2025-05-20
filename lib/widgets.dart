@@ -26,8 +26,10 @@ class GradientBackground extends StatelessWidget {
 }
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool? is_auth_page;
-  const CustomAppBar({
+ final List<Widget>? actions;
+   const CustomAppBar({
     this.is_auth_page,
+    this.actions,
     super.key,
   });
 
@@ -39,7 +41,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
     backgroundColor: Colors.transparent, 
           automaticallyImplyLeading: !(is_auth_page ?? false),
-
+actions: actions,
       title: const Text('IBAN VAULT'),
       centerTitle: true,
       titleTextStyle: TextStyle(

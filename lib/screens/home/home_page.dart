@@ -1,5 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:ibanvault/core/routes/route_names.dart';
+import 'package:ibanvault/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../widgets.dart';
 import '../addIban/view/addIban_screen.dart';
@@ -29,11 +32,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return GradientBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
 
-        appBar: CustomAppBar(),
+        appBar: CustomAppBar(is_auth_page: true,
+        actions: [
+          InkWell(
+            onTap: ()async{
+              await authProvider.logOut();
+               ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Loged out successfuly",style: TextStyle(color: Colors.white),),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                                Navigator.pushReplacementNamed(context, Routenames.login);
+            },
+            child: Icon(Icons.logout,color: Colors.white,),
+          )
+        ],
+        ),
         body: _pages[_selectedIndex],
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),
