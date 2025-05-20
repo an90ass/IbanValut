@@ -34,15 +34,15 @@ final storage = FlutterSecureStorage();
   return isMatch;
 }
 
-  Future<bool> forgetPassword (String remeberQuestion) async {
+  Future<bool> forgetPassword (String rememberQuestion) async {
     final storedRememberQuestion = await storage.read(key: 'remeberQuestion');
-    return storedRememberQuestion == remeberQuestion;
+    return storedRememberQuestion == rememberQuestion;
   }
 
-Future<void> editUserInfo(User user) async {
+Future<bool> editUserInfo(User user) async {
   final existingUsername = await storage.read(key: 'username');
   if (existingUsername == null) {
-    throw Exception("No user to edit");
+    throw false;
   }
     await storage.deleteAll();
   final hashedPassword = sha256.convert(utf8.encode(user.password)).toString();
@@ -58,6 +58,7 @@ Future<void> editUserInfo(User user) async {
   if (user.remeberQuestion.isNotEmpty) {
     await storage.write(key: 'remeberQuestion', value: user.remeberQuestion);
   }
+  return true;
 }
 
 }

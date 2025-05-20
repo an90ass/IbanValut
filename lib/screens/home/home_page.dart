@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:ibanvault/core/routes/route_names.dart';
 import 'package:ibanvault/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import '../../widgets.dart';
 import '../addIban/view/addIban_screen.dart';
@@ -42,12 +44,12 @@ final authProvider = Provider.of<AuthProvider>(context, listen: false);
           InkWell(
             onTap: ()async{
               await authProvider.logOut();
-               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Loged out successfuly",style: TextStyle(color: Colors.white),),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
+                                                              showTopSnackBar(
+      Overlay.of(context),
+      CustomSnackBar.success(
+        message: "Loged out successfuly",
+      ),
+    );
                                 Navigator.pushReplacementNamed(context, Routenames.login);
             },
             child: Icon(Icons.logout,color: Colors.white,),

@@ -64,6 +64,50 @@ final auth = AuthService();
   
 
   }
+Future<void> forgotPassword(String rememberQuestion) async {
+  _isLoading = true;
+  _errorMessage = null;
+  _successMessage = null;
+  notifyListeners();
+
+  try {
+    final isQuestionCorrect = await secureStorageService.forgetPassword(rememberQuestion);
+
+    if (isQuestionCorrect) {
+      _successMessage = "Security question matched!";
+    } else {
+      _errorMessage = "Incorrect answer to the security question.";
+    }
+  } catch (e) {
+    _errorMessage = "An unexpected error occurred";
+  } finally {
+    _isLoading = false;
+    notifyListeners();
+  }
+}
+
+Future<void> editUserInfo(User user) async {
+  _isLoading = true;
+  _errorMessage = null;
+  _successMessage = null;
+  notifyListeners();
+
+  try {
+    final isEditingFinished = await secureStorageService.editUserInfo(user);
+
+    if (isEditingFinished) {
+      _successMessage = "Your information updated successfully. Try to login again!";
+    } else {
+      _errorMessage = "Failed to update user information.";
+    }
+  } catch (e) {
+    _errorMessage = "An unexpected error occurred";
+  } finally {
+    _isLoading = false;
+    notifyListeners();
+  }
+}
+
   Future<void> logOut()async{
     await auth.logOut();
   }
