@@ -2,6 +2,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ibanvault/core/utils/AppColors.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -33,7 +34,8 @@ static showQrDialog(BuildContext context, String ibanText) {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'IBAN QR Code',
+             AppLocalizations.of(context)!.ibanQrTitle,
+
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -70,8 +72,9 @@ static showQrDialog(BuildContext context, String ibanText) {
                             );
                             showTopSnackBar(
                               Overlay.of(context),
-                              const CustomSnackBar.success(
-                                message: 'IBAN copied Successfuly',
+                               CustomSnackBar.success(
+                                message:AppLocalizations.of(context)!.ibanCopied,
+        
                               ),
                             );
                           },
@@ -109,8 +112,8 @@ static showQrDialog(BuildContext context, String ibanText) {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text(
-                        'Close',
+                      child:  Text(
+                        AppLocalizations.of(context)!.close,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,

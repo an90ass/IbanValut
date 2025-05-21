@@ -9,7 +9,7 @@ await prefs.setBool('isLoggedIn',true);
 
       Future<void> logOut() async {
     final prefs = await SharedPreferences.getInstance();
-   await prefs.clear();
+  await prefs.remove('isLoggedIn');
   }
     Future<bool> isUserLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();

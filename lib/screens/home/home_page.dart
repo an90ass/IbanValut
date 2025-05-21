@@ -1,7 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:ibanvault/core/routes/route_names.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:ibanvault/providers/auth_provider.dart';
+import 'package:ibanvault/screens/settings/views/settings_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -23,7 +25,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const HomeContent(),
-     AddIbanScreen(),
+    AddIbanScreen(),
     const SettingsPage(),
   ];
   void _onItemTapped(int index) {
@@ -34,28 +36,31 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return GradientBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
 
-        appBar: CustomAppBar(is_auth_page: true,
-        actions: [
-          InkWell(
-            onTap: ()async{
-              await authProvider.logOut();
-                                                              showTopSnackBar(
-      Overlay.of(context),
-      CustomSnackBar.success(
-        message: "Loged out successfuly",
-      ),
-    );
-                                Navigator.pushReplacementNamed(context, Routenames.login);
-            },
-            child: Icon(Icons.logout,color: Colors.white,),
-          )
-        ],
-        ),
+       appBar: CustomAppBar(
+  is_auth_page: true,
+  actions: [
+    IconButton(
+      tooltip: AppLocalizations.of(context)!.logOutBtn,
+      icon: const Icon(Icons.logout, color: Colors.white),
+      onPressed: () async {
+        await authProvider.logOut();
+        showTopSnackBar(
+          Overlay.of(context),
+          CustomSnackBar.success(
+            message: AppLocalizations.of(context)!.logedOut,
+          ),
+        );
+        Navigator.pushReplacementNamed(context, Routenames.login);
+      },
+    ),
+  ],
+),
+
         body: _pages[_selectedIndex],
         bottomNavigationBar: _buildBottomNavigationBar(),
       ),
@@ -79,19 +84,6 @@ final authProvider = Provider.of<AuthProvider>(context, listen: false);
         Icon(Icons.add, size: 30),
         Icon(Icons.compare_arrows, size: 30),
       ],
-    );
-  }
-}
-
-
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Settings Page", style: TextStyle(fontSize: 20)),
     );
   }
 }

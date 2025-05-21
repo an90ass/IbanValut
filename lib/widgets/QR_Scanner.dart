@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QrScannerDialogContent extends StatefulWidget {
@@ -48,7 +49,8 @@ class _QrScannerDialogContentState extends State<QrScannerDialogContent> {
                   Icon(Icons.qr_code_scanner, color: colors.primary),
                   const SizedBox(width: 10),
                   Text(
-                    'Scan QR Code',
+                    AppLocalizations.of(context)!.scanQRCode,
+
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -119,7 +121,7 @@ class _QrScannerDialogContentState extends State<QrScannerDialogContent> {
               padding: const EdgeInsets.symmetric(vertical: 12),
               color: colors.surfaceVariant,
               child: Text(
-                'Align the QR code within the frame',
+                AppLocalizations.of(context)!.alignQr,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),

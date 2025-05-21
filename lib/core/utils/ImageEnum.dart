@@ -14,8 +14,9 @@ enum ImageEnum {
   KuveytTurk("KuveytTurk"),
   Akbank("Akbank"),
   AlbarakaTurk("AlbarakaTurk"),
-  GarantiBBVA("GarantiBBVA");
+  GarantiBBVA("GarantiBBVA"),
 
+  defult("defult");
 
 
   final String value;

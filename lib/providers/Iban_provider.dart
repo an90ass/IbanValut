@@ -7,6 +7,14 @@ class IbansProvider with ChangeNotifier {
 
   List<Iban> _ibans = [];
   List<Iban> get ibans => _ibans;
+  bool _isLoading =false;
+  String? _errorMessage;
+  String? _successMessage;
+  bool get isLoading => _isLoading;
+  String? get successMessage => _successMessage;
+  String? get errorMessage => _errorMessage;
+
+
 
   Future<void> fetchMyIbans() async {
     _ibans = await dbOperations.getMyAllIbans();
@@ -14,9 +22,23 @@ class IbansProvider with ChangeNotifier {
   }
 
   Future<void> addMyIban(Iban ibanModel) async {
+  _isLoading = true;
+  _successMessage = null;
+  _errorMessage = null;
+  notifyListeners();
+
+  try {
     await dbOperations.insertMyIban(ibanModel.toMap());
     await fetchMyIbans();
+    _successMessage = "IBAN saved successfully!";
+  } catch (e) {
+    _errorMessage = "Failed to save IBAN";
+  } finally {
+    _isLoading = false;
+    notifyListeners();
   }
+}
+
 
   Future<void> updateIban(Iban updatedIban) async {
     await dbOperations.updateMyIban(updatedIban);

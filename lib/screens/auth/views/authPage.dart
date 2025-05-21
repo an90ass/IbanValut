@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:ibanvault/screens/auth/views/LoginView.dart';
 import 'package:ibanvault/screens/auth/views/SignUpView.dart';
 
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return _goToPage(0);
                 },
                 child: Text(
-                  "Login",
+                  AppLocalizations.of(context)!.loginbtn,
                   style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return _goToPage(1);
                 },
                 child: Text(
-                  "Sign Up",
+                  AppLocalizations.of(context)!.signUpbtn,
                   style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
               ),

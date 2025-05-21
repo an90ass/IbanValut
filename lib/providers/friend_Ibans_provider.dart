@@ -7,6 +7,13 @@ class FriendIbansProvider with ChangeNotifier {
 
   List<FriendIban> _friendIbans = [];
   List<FriendIban> get friendIbans => _friendIbans;
+  bool _isLoading = false;
+  String? _errorMessage;
+  String? _successMessage;
+
+  bool get isLoading => _isLoading;
+  String? get successMessage => _successMessage;
+  String? get errorMessage => _errorMessage;
 
   Future<void> fetchFriendIbans() async {
     _friendIbans = await dbOperations.getAllFriendIbans();
@@ -14,8 +21,21 @@ class FriendIbansProvider with ChangeNotifier {
   }
 
   Future<void> addFriendIban(FriendIban ibanModel) async {
-    await dbOperations.insertFriendIban(ibanModel.toMap());
-    await fetchFriendIbans();
+    _isLoading = true;
+    _successMessage = null;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await dbOperations.insertFriendIban(ibanModel.toMap());
+      await fetchFriendIbans();
+      _successMessage = "Friend IBAN saved successfully!";
+    } catch (e) {
+      _errorMessage = "Failed to save friend IBAN: ${e.toString()}";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> updateFriendIban(FriendIban updatedIban) async {

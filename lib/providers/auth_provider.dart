@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:ibanvault/data/models/user_model.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:ibanvault/services/authService.dart';
 import '../services/futterSecureStorageService.dart' show SecureStorageService;
 
@@ -38,7 +39,7 @@ final auth = AuthService();
   }
 
 
-  Future<void> userLogin(String userName,String password)async{
+  Future<void> userLogin(BuildContext context,String userName,String password)async{
       _isLoading = true;
     _errorMessage = null;
     _successMessage = null;
@@ -51,12 +52,12 @@ final auth = AuthService();
       print(password);
       if (response) {
         await auth.login();
-        _successMessage = 'Loged in successfully.';
+_successMessage = AppLocalizations.of(context)!.loginSuccess;
       } else {
-        _errorMessage = 'Incorrect username or password.';
+_errorMessage = AppLocalizations.of(context)!.loginInvalid;
       }
     } catch (e) {
-      _errorMessage = 'Login failed';
+      _errorMessage= AppLocalizations.of(context)!.loginFailed;
     } finally {
       _isLoading = false;
       notifyListeners();

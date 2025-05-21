@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ibanvault/data/banks.dart';
 import 'package:ibanvault/data/models/friend_ibans_model.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:ibanvault/providers/Iban_provider.dart';
 import 'package:ibanvault/providers/friend_Ibans_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -28,6 +30,10 @@ class _AddIbanScreenState extends State<AddIbanScreen>
   final TextEditingController _friendibanController = TextEditingController();
 
   late TabController _tabController;
+  bool _isCustomBank = false;
+final TextEditingController _customBankController = TextEditingController();
+  bool _isCustomFriendBank = false;
+final TextEditingController _customFriendBankController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -60,8 +66,10 @@ class _AddIbanScreenState extends State<AddIbanScreen>
               indicatorColor: AppColors.blue,
               labelColor: AppColors.blue,
               unselectedLabelColor: Colors.grey,
-              tabs: const [Tab(text: 'My IBAN'), Tab(text: 'Friend\'s IBAN')],
-            ),
+          tabs:  [
+  Tab(text: AppLocalizations.of(context)!.myIbans),
+  Tab(text: AppLocalizations.of(context)!.friendsIbans),
+],            ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
@@ -79,14 +87,14 @@ class _AddIbanScreenState extends State<AddIbanScreen>
 
   Text _buildSubTitleText() {
     return Text(
-      "Add your IBAN details securely and easilu. ",
+      AppLocalizations.of(context)!.addIbanSubtitle,
       style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
     );
   }
 
   Text _buildTitleText() {
     return Text(
-      'Add IBAN Page',
+      AppLocalizations.of(context)!.addIbanPage,
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -108,7 +116,8 @@ class _AddIbanScreenState extends State<AddIbanScreen>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Add New IBAN',
+                   AppLocalizations.of(context)!.addNewIban,
+
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -119,34 +128,63 @@ class _AddIbanScreenState extends State<AddIbanScreen>
             const SizedBox(height: 24),
 
             DropdownButtonFormField<String>(
-              value: _bankName,
-              dropdownColor: AppColors.primary,
-              decoration: const InputDecoration(
-                fillColor: Colors.red,
-                labelText: 'Bank Name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.account_balance),
-              ),
-              items:
-                  Banks.turkishBanks.map((bank) {
-                    return DropdownMenuItem<String>(
-                      value: bank,
-                      child: Text(bank),
-                    );
-                  }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _bankName = value;
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select a bank';
-                }
-                return null;
-              },
-              onSaved: (value) => _bankName = value,
-            ),
+value: _isCustomBank ? 'other' : _bankName,
+  dropdownColor: AppColors.primary,
+  decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)!.bankName,
+    border: OutlineInputBorder(),
+    prefixIcon: Icon(Icons.account_balance),
+  ),
+  items: [
+     DropdownMenuItem<String>(
+      value: 'other',
+      child: Text(AppLocalizations.of(context)!.anotherbank,style: TextStyle(color: AppColors.secondary)),
+    ),
+    ...Banks.turkishBanks.map((bank) {
+      return DropdownMenuItem<String>(
+        value: bank,
+        child: Text(bank),
+      );
+    }).toList(),
+  ],
+  onChanged: (value) {
+    setState(() {
+      if (value == 'other') {
+        _isCustomBank = true;
+        _bankName = null;
+      } else {
+        _isCustomBank = false;
+        _bankName = value;
+      }
+    });
+  },
+  validator: (value) {
+    if (!_isCustomBank && (value == null || value.isEmpty)) {
+      return AppLocalizations.of(context)!.pleaseSelectBank;
+    }
+    return null;
+  },
+  onSaved: (value) {
+    if (!_isCustomBank) _bankName = value;
+  },
+),
+if (_isCustomBank)
+  Padding(
+    padding: const EdgeInsets.only(top: 16.0),
+    child: CustomTextFormField(
+      controller: _customBankController,
+      labelText: AppLocalizations.of(context)!.bankName,
+      hintText: AppLocalizations.of(context)!.bankName,
+      icon: const Icon(Icons.edit),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return AppLocalizations.of(context)!.pleaseEnterBankName;
+        }
+        return null;
+      },
+      onSaved: (value) => _bankName = value,
+    ),
+  ),
 
             const SizedBox(height: 16),
 
@@ -155,12 +193,12 @@ class _AddIbanScreenState extends State<AddIbanScreen>
                 Expanded(
                   child: CustomTextFormField(
                     controller: _ibanController,
-                    labelText: 'IBAN Number',
-                    hintText: 'e.g. SA0380000000608010167519',
+                    labelText: AppLocalizations.of(context)!.ibanNumber,
+                    hintText: AppLocalizations.of(context)!.ibanHint,
                     icon: const Icon(Icons.person),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your IBAN number';
+                        return AppLocalizations.of(context)!.pleaseEnterIban;
                       }
                       return null;
                     },
@@ -193,8 +231,9 @@ class _AddIbanScreenState extends State<AddIbanScreen>
   }
 
   ElevatedButton _buildMyIbanSaveButton(BuildContext context) {
+    final iban_provider = Provider.of<IbansProvider>(context,listen: false);
     return ElevatedButton(
-      onPressed: () {
+      onPressed: ()async {
         if (_myIbanFormKey.currentState!.validate()) {
           _myIbanFormKey.currentState!.save();
 
@@ -202,34 +241,37 @@ class _AddIbanScreenState extends State<AddIbanScreen>
             bankName: _bankName!,
 
             ibanNumber: _ibanNumber!,
-            createdAt: DateTime.now().toString(),
+createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           );
-          context.read<IbansProvider>().addMyIban(ibanModel);
-          showTopSnackBar(
+         await iban_provider.addMyIban(ibanModel);
+          if(iban_provider.successMessage !=null){
+ showTopSnackBar(
             Overlay.of(context),
-            const CustomSnackBar.success(message: 'IBAN saved successfully!'),
+             CustomSnackBar.success(message: AppLocalizations.of(context)!.ibanSaveSuccess),
           );
           setState(() {
             _bankName = null;
           });
           _myIbanFormKey.currentState!.reset();
-        } else {
+          }
+         
+         else {
           showTopSnackBar(
             Overlay.of(context),
-            const CustomSnackBar.error(
-              message: 'Failed to save IBAN please try again',
+             CustomSnackBar.error(
+              message: AppLocalizations.of(context)!.ibanSaveFailed,
             ),
           );
         }
-      },
+    }  },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.blue,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 2,
       ),
-      child: const Text(
-        'Save IBAN',
+      child:  Text(
+         iban_provider.isLoading ? AppLocalizations.of(context)!.pleaseWait: AppLocalizations.of(context)!.saveIban,
         style: TextStyle(
           color: Colors.white,
           fontSize: 18,
@@ -253,7 +295,7 @@ class _AddIbanScreenState extends State<AddIbanScreen>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Add Friend\'s IBAN',
+                AppLocalizations.of(context)!.addFriendIban,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -264,12 +306,12 @@ class _AddIbanScreenState extends State<AddIbanScreen>
               const SizedBox(height: 24),
 
               CustomTextFormField(
-                labelText: 'Friend\'s Name',
-                hintText: 'e.g. Ahmed Yılmaz',
+                labelText: AppLocalizations.of(context)!.friendNameLabel,
+                hintText:  AppLocalizations.of(context)!.friendNameHint,
                 icon: const Icon(Icons.person),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your friend\'s name';
+                    return AppLocalizations.of(context)!.pleaseEnterFriendName;
                   }
                   return null;
                 },
@@ -278,52 +320,83 @@ class _AddIbanScreenState extends State<AddIbanScreen>
 
               const SizedBox(height: 16),
 
-              DropdownButtonFormField<String>(
-                value: _friendBankName,
-                dropdownColor: AppColors.primary,
-                decoration: const InputDecoration(
-                  labelText: 'Bank Name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.account_balance),
-                ),
-                items:
-                    Banks.turkishBanks.map((bank) {
-                      return DropdownMenuItem<String>(
-                        value: bank,
-                        child: Text(bank),
-                      );
-                    }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _friendBankName = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a bank';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _friendBankName = value,
-              ),
+                 DropdownButtonFormField<String>(
+value: _isCustomFriendBank ? 'other' : _friendBankName,
+  dropdownColor: AppColors.primary,
+  decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)!.bankName,
+    border: OutlineInputBorder(),
+    prefixIcon: Icon(Icons.account_balance),
+  ),
+  items: [
+     DropdownMenuItem<String>(
+      value: 'other',
+      child: Text(AppLocalizations.of(context)!.anotherbank,style: TextStyle(color: AppColors.secondary),),
+    ),
+    ...Banks.turkishBanks.map((bank) {
+      return DropdownMenuItem<String>(
+        value: bank,
+        child: Text(bank),
+      );
+    }).toList(),
+  ],
+  onChanged: (value) {
+    setState(() {
+      if (value == 'other') {
+        _isCustomFriendBank = true;
+        _friendBankName  = null;
+      } else {
+        _isCustomFriendBank = false;
+        _friendBankName  = value;
+      }
+    });
+  },
+  validator: (value) {
+    if (!_isCustomFriendBank && (value == null || value.isEmpty)) {
+      return AppLocalizations.of(context)!.pleaseSelectBank;
+    }
+    return null;
+  },
+  onSaved: (value) {
+    if (!_isCustomFriendBank) _friendBankName  = value;
+  },
+),
+if (_isCustomFriendBank)
+  Padding(
+    padding: const EdgeInsets.only(top: 16.0),
+    child: CustomTextFormField(
+      controller: _customFriendBankController,
+      labelText: AppLocalizations.of(context)!.bankName,
+      hintText:AppLocalizations.of(context)!.bankName,
+      icon: const Icon(Icons.edit),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return AppLocalizations.of(context)!.pleaseEnterBankName;
+        }
+        return null;
+      },
+      onSaved: (value) => _friendBankName  = value,
+    ),
+  ),
 
-              const SizedBox(height: 16),
+            const SizedBox(height: 16),
+  const SizedBox(height: 16),
 
               Row(
                 children: [
                   Expanded(
                     child: CustomTextFormField(
                       controller: _friendibanController,
-                      labelText: 'IBAN Number',
-                      hintText: 'e.g. TR0380000000608010167519',
+                      labelText: AppLocalizations.of(context)!.ibanNumber,
+                      hintText: AppLocalizations.of(context)!.ibanHint,
                       icon: const Icon(Icons.person),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your IBAN number';
+                          return AppLocalizations.of(context)!.pleaseEnterIban;
                         }
                         return null;
                       },
-                      onSaved: (value) => _ibanNumber = value,
+onSaved: (value) => _friendIbanNumber = value,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -352,53 +425,62 @@ class _AddIbanScreenState extends State<AddIbanScreen>
     );
   }
 
-  ElevatedButton _buildFriendIbanSaveButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        if (_friendIbanFormKey.currentState!.validate()) {
-          _friendIbanFormKey.currentState!.save();
+  Widget _buildFriendIbanSaveButton(BuildContext context) {
+    return Consumer<FriendIbansProvider>(
+      builder: (context, friendIbansProvider, child){
 
-          final ibanModel = FriendIban(
-            bankName: _friendBankName!,
-            ibanNumber: _friendIbanNumber!,
-            createdAt: DateTime.now().toString(),
-            name: _friendName!,
-          );
-          print(ibanModel.name);
-          print(ibanModel.ibanNumber);
-          context.read<FriendIbansProvider>().addFriendIban(ibanModel);
-          showTopSnackBar(
-            Overlay.of(context),
-            const CustomSnackBar.success(message: 'IBAN saved successfully!'),
-          );
-          setState(() {
-            _bankName = null;
-          });
-          _friendIbanFormKey.currentState!.reset();
-        } else {
-          showTopSnackBar(
-            Overlay.of(context),
-            const CustomSnackBar.error(
-              message: 'Failed to save IBAN please try again',
-            ),
-          );
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.blue,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 2,
-      ),
-      child: const Text(
-        'Save IBAN',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+     
+     return ElevatedButton(
+        onPressed: () async{
+          if (_friendIbanFormKey.currentState!.validate()) {
+            _friendIbanFormKey.currentState!.save();
+      
+            final ibanModel = FriendIban(
+ bankName: _isCustomFriendBank
+      ? _customFriendBankController.text.trim()
+      : _friendBankName!,              ibanNumber: _friendIbanNumber!,
+createdAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+              name: _friendName!,
+            );
+            print(ibanModel.name);
+            print(ibanModel.ibanNumber);
+           await friendIbansProvider.addFriendIban(ibanModel);
+           if(friendIbansProvider.successMessage!=null){
+              showTopSnackBar(
+              Overlay.of(context),
+               CustomSnackBar.success(message: AppLocalizations.of(context)!.ibanSaveSuccess),
+            );
+            setState(() {
+              _bankName = null;
+            });
+            _friendIbanFormKey.currentState!.reset();
+           }
+          
+           else {
+            showTopSnackBar(
+              Overlay.of(context),
+               CustomSnackBar.error(
+                message: AppLocalizations.of(context)!.ibanSaveFailed,
+              ),
+            );
+          }
+       } },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.blue,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          elevation: 2,
         ),
-      ),
-    );
+        child:  Text(
+         friendIbansProvider.isLoading ? AppLocalizations.of(context)!.pleaseWait: AppLocalizations.of(context)!.saveIban,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+     });
   }
 
   Future<String?> showQrScannerDialog(BuildContext context) async {

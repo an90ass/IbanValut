@@ -1,16 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ibanvault/core/routes/app_routes.dart';
 import 'package:ibanvault/core/utils/AppColors.dart';
+import 'package:ibanvault/l10n/L10n.dart';
+import 'package:ibanvault/l10n/app_localizations.dart';
 import 'package:ibanvault/providers/Iban_provider.dart';
 import 'package:ibanvault/providers/auth_provider.dart';
 import 'package:ibanvault/providers/friend_Ibans_provider.dart';
+import 'package:ibanvault/providers/language_provider.dart';
 import 'package:ibanvault/services/authService.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   
-  runApp(const IbanVaultApp());
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => IbansProvider()),
+        ChangeNotifierProvider(create: (_) => FriendIbansProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+ ChangeNotifierProvider(create: (_) => LanguageProvider()),      ],
+      child: const IbanVaultApp(),
+    ),
+  );
 }
+
 
 class IbanVaultApp extends StatefulWidget {
   const IbanVaultApp({super.key});
@@ -20,8 +37,8 @@ class IbanVaultApp extends StatefulWidget {
 }
 
 class _IbanVaultAppState extends State<IbanVaultApp> {
-    late Future<bool> _loggedInFuture;
- @override
+  late Future<bool> _loggedInFuture;
+  @override
   void initState() {
     super.initState();
     _loggedInFuture = AuthService().isUserLoggedIn();
@@ -34,42 +51,47 @@ class _IbanVaultAppState extends State<IbanVaultApp> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const MaterialApp(
-            home: Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            ),
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
           );
         }
 
         final loggedIn = snapshot.data ?? false;
 
-        return MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => IbansProvider()),
-            ChangeNotifierProvider(create: (_) => FriendIbansProvider()),
-                        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        return Consumer<LanguageProvider>(
+          builder: (context, languageProvider, child) {
+            print(languageProvider.locale);
+            return MaterialApp(
+                          debugShowCheckedModeBanner: false,
 
-          ],
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            onGenerateRoute: AppRoutes.onGenerateRoute,
-            initialRoute: loggedIn ? '/home' : '/login',
-            theme: ThemeData.dark().copyWith(
-              scaffoldBackgroundColor: Colors.black,
-              primaryColor: Colors.white,
-              colorScheme: ThemeData.dark().colorScheme.copyWith(
-                primary: AppColors.blue,
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: languageProvider.locale,
+              onGenerateRoute: AppRoutes.onGenerateRoute,
+              initialRoute: loggedIn ? '/home' : '/login',
+              theme: ThemeData.dark().copyWith(
+                scaffoldBackgroundColor: Colors.black,
+                primaryColor: Colors.white,
+                colorScheme: ThemeData.dark().colorScheme.copyWith(
+                  primary: AppColors.blue,
+                ),
+                textTheme: ThemeData.dark().textTheme.apply(
+                  bodyColor: Colors.white,
+                  displayColor: Colors.white,
+                ),
+                appBarTheme: const AppBarTheme(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
               ),
-              textTheme: ThemeData.dark().textTheme.apply(
-                bodyColor: Colors.white,
-                displayColor: Colors.white,
-              ),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                elevation: 0,
-              ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
